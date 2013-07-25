@@ -8,7 +8,7 @@ require 'pp'
 
 module Inliner
  class Inline
-    def initialize(url)
+    def initialize(url, head_options={})
       unless validate_url(url)
         raise ArgumentError, "#{url} is not a valid URL!"
       end
@@ -16,7 +16,7 @@ module Inliner
       @assets = {}
       @url = URI.parse(url)
       EM.run do
-        http = EM::HttpRequest.new(@url, :connect_timeout => 5, :inactivity_timeout => 10).get :redirects => 1
+        http = EM::HttpRequest.new(@url, :connect_timeout => 5, :inactivity_timeout => 10).get :redirects => 1, :head => head_options
         http.callback {
           @doc = Nokogiri::HTML(http.response)
           EM.stop
